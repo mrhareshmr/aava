@@ -30,7 +30,7 @@ def report(blocknr, blocksize, size):
 def tooldownload(toolurl, cwd, report):
     if not os.path.exists(cwd + '/tools'):
         os.mkdir(cwd + '/tools')
-    print("Downloading tool... -> " + cwd + "/tools")
+    print("\nDownloading tools... -> " + cwd + "/tools")
     name = os.path.join(cwd, 'temp.zip')
     try:
         name = urllib.request.urlretrieve(toolurl, name, report)
@@ -38,7 +38,6 @@ def tooldownload(toolurl, cwd, report):
     except IOError as e:
         print("Can't retrieve %r to %r: %s" % (toolurl, cwd, e))
         return
-    print('\ndone')
     try:
         zip_ref = zipfile.ZipFile(cwd + '/temp.zip', 'r')
         zip_ref.extractall(cwd)
@@ -50,11 +49,8 @@ def tooldownload(toolurl, cwd, report):
 
 def dirmk(apk_file):
     if apk_file.endswith('.apk'):
-        print('\nAPK : ' + apk_file)
         apkpath = os.path.dirname(apk_file)
-        print('\nAPK Path : ' + apkpath)
         apkname = os.path.basename(os.path.splitext(apk_file)[0])
-        print('\nAPK name : ' + apkname)
         if not os.path.exists(apkpath + '/' + apkname):
             os.makedirs(apkpath + '/' + apkname)
     tooldownload(toolurl, cwd, report)
@@ -68,12 +64,9 @@ def apktool(apkfile):
     outputdir = apkpath + '/' + apkname + '_apktool'
     if not os.path.exists(outputdir):
         os.makedirs(outputdir)
-    print(apktooldir + '\n' + outputdir)
     if apkfile != '':
         cmd = ('java -jar ' + apktooldir + ' d ' + apkfile + ' -o ' + outputdir + ' -f')
-        print(cmd)
         subprocess.call(cmd, shell=True)
-        print('Done - Subprocess')
 
 
 def dexjar(apkfile):
@@ -84,12 +77,9 @@ def dexjar(apkfile):
     outputdir = apkpath + '/' + apkname + '_dex2jar'
     if not os.path.exists(outputdir):
         os.makedirs(outputdir)
-    print(dex2jardir + '\n' + outputdir)
     if apkfile != '':
         cmd = ('sh ' + dex2jardir + ' ' + apkfile + ' -o ' + outputdir + '/out.jar' + ' -f')
-        print(cmd)
         subprocess.call(cmd, shell=True)
-        print('Done - Subprocess')
 
 
 def main():
@@ -103,7 +93,9 @@ def main():
         dexjar(apk_file)
     except IOError:
         print("Use Valid APK")
-
+    os.remove(cwd + '/temp.zip')
+    print('\n\nCheck APK directory for decompiled files\n')
+        
 
 if __name__ == "__main__":
     main()
