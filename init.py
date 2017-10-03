@@ -4,6 +4,7 @@ import os
 import sys
 import urllib.request
 import zipfile
+from xml.dom import minidom
 import subprocess
 
 global apk_file, apkpath, apkname, tools, apktooldir, cwd, dex2jardir
@@ -57,7 +58,7 @@ def dirmk(apk_file):
 
 
 def apktool(apkfile):
-    print("Using APKTOOL")
+    print("\nUsing APKTOOL")
     apkpath = os.path.dirname(apkfile)
     apkname = os.path.basename(os.path.splitext(apkfile)[0])
     apktooldir = cwd + '/tools/apktool.jar'
@@ -82,6 +83,29 @@ def dexjar(apkfile):
         subprocess.call(cmd, shell=True)
 
 
+def activity(xmlfile):
+    act = xmlfile.getElementsByTagName("activity")
+    activitylen = len(act)
+    for i in act:
+        print(i.attributes['android:name'].value)
+    print("Activities - " + str(activitylen))
+
+
+def xmllist(apkfile):
+    apkpath = os.path.dirname(apkfile)
+    apkname = os.path.basename(os.path.splitext(apkfile)[0])
+    outputdir = apkpath + '/' + apkname + '_apktool'
+    try:
+        xmlfile = minidom.parse(outputdir + '/AndroidManifest.xml')
+        activity(xmlfile)
+    except IOError:
+        print("\n\nUnable to detect Android Manifest file\nPlease provide manifest path\nCheck manifest file at (" + outputdir + ") .xml: ")
+        xmlfile = input()
+        if (os.path.isfile(xmlfile) == True):
+            activity(xmlfile)
+        else:
+            print("\n\nWrong File, Process Terminated!!")
+
 def main():
     sysargv()
     apk_file = sys.argv[1]
@@ -93,9 +117,11 @@ def main():
         dexjar(apk_file)
     except IOError:
         print("Use Valid APK")
+    xmllist(apk_file)
+
     os.remove(cwd + '/temp.zip')
     print('\n\nCheck APK directory for decompiled files\n')
-        
+
 
 if __name__ == "__main__":
     main()
