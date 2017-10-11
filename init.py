@@ -84,11 +84,58 @@ def dexjar(apkfile):
 
 
 def activity(xmlfile):
-    act = xmlfile.getElementsByTagName("activity")
-    activitylen = len(act)
-    for i in act:
-        print(i.attributes['android:name'].value)
-    print("Activities - " + str(activitylen))
+    try:
+        act = xmlfile.getElementsByTagName("activity")
+        activitylen = len(act)
+        for i in act:
+            print(i.attributes['android:name'].value)
+        print("Activities - " + str(activitylen) + "\n\n")
+    except IOError:
+        print("Activities - 0" + "\n\n")
+
+
+def permissions(xmlfile):
+    try:
+        per = xmlfile.getElementsByTagName("uses-permission")
+        permissionlen = len(per)
+        for i in per:
+            print(i.attributes['android:name'].value)
+        print("Permissions - " + str(permissionlen) + "\n\n")
+    except IOError:
+        print("Permissions - 0" + "\n\n")
+
+
+def service(xmlfile):
+    try:
+        ser = xmlfile.getElementsByTagName("service")
+        servcelen = len(ser)
+        for i in ser:
+            print(i.attributes['android:name'].value)
+        print("Services - " + str(servcelen) + "\n\n")
+    except IOError:
+        print("Services - 0" + "\n\n")
+
+
+def receiver(xmlfile):
+    try:
+        rec = xmlfile.getElementsByTagName("receiver")
+        receiverlen = len(rec)
+        for i in rec:
+            print(i.attributes['android:name'].value)
+        print("Broadcast Receiver - " + str(receiverlen) + "\n\n")
+    except IOError:
+        print("Broadcast Receiver - 0" + "\n\n")
+
+
+def provider(xmlfile):
+    try:
+        pro = xmlfile.getElementsByTagName("provider")
+        providerlen = len(pro)
+        for i in pro:
+            print(i.attributes['android:authorities'].value)
+        print("Content Providers - " + str(providerlen) + "\n\n")
+    except IOError:
+        print("Content Providers - 0" + "\n\n")
 
 
 def xmllist(apkfile):
@@ -98,11 +145,19 @@ def xmllist(apkfile):
     try:
         xmlfile = minidom.parse(outputdir + '/AndroidManifest.xml')
         activity(xmlfile)
+        permissions(xmlfile)
+        service(xmlfile)
+        receiver(xmlfile)
+        provider(xmlfile)
     except IOError:
         print("\n\nUnable to detect Android Manifest file\nPlease provide manifest path\nCheck manifest file at (" + outputdir + ") .xml: ")
         xmlfile = input()
         if (os.path.isfile(xmlfile) == True):
             activity(xmlfile)
+            permissions(xmlfile)
+            service(xmlfile)
+            receiver(xmlfile)
+            provider(xmlfile)
         else:
             print("\n\nWrong File, Process Terminated!!")
 
